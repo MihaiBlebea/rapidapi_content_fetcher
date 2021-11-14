@@ -1,0 +1,29 @@
+@baseUrl = http://127.0.0.1:5000
+
+###
+
+POST {{baseUrl}}/rss HTTP/2.0
+Content-Type: application/json
+
+{
+	"link": "https://waylonwalker.com/rss.xml"
+}
+
+###
+
+GET {{baseUrl}}/rss HTTP/2.0
+# Content-Type: application/json
+# Authorization: Bearer <access_token>
+
+###
+
+# @name client
+GET {{baseUrl}}/articles HTTP/2.0
+Content-Type: application/json
+
+@articleId = {{client.response.body.$.data[0].id}}
+
+###
+
+GET {{baseUrl}}/article/{{articleId}} HTTP/2.0
+Content-Type: application/json
