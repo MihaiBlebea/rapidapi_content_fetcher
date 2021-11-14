@@ -6,8 +6,8 @@ from store import get_scrape_results
 
 app = Flask(__name__)
 
-@app.route("/", methods=["GET"])
-def index():
+@app.route("/scrape", methods=["GET"])
+def scrape():
 	url = request.args.get("url")
 	if url is None:
 		return jsonify({
