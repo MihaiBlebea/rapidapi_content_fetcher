@@ -1,29 +1,10 @@
 @baseUrl = http://127.0.0.1:5000
+@rapiApiProxySecret = 1234abcd
 
 ###
 
-POST {{baseUrl}}/rss HTTP/2.0
+@scrapeUrl = https://www.calhoun.io/crash-course-on-go-interfaces/
+
+GET {{baseUrl}}/scrape?url={{scrapeUrl}} HTTP/2.0
 Content-Type: application/json
-
-{
-	"link": "https://waylonwalker.com/rss.xml"
-}
-
-###
-
-GET {{baseUrl}}/rss HTTP/2.0
-# Content-Type: application/json
-# Authorization: Bearer <access_token>
-
-###
-
-# @name client
-GET {{baseUrl}}/articles HTTP/2.0
-Content-Type: application/json
-
-@articleId = {{client.response.body.$.data[0].id}}
-
-###
-
-GET {{baseUrl}}/article/{{articleId}} HTTP/2.0
-Content-Type: application/json
+X-RapidAPI-Proxy-Secret: {{rapiApiProxySecret}}
