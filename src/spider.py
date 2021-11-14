@@ -4,6 +4,8 @@ from w3lib.http import basic_auth_header
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 from dotenv import dotenv_values
+import os
+
 
 class ContentSpider(Spider):
 
@@ -16,6 +18,9 @@ class ContentSpider(Spider):
 	def __init__(self, url):
 		self.start_url = url
 
+		if "SPLASH_URL" not in self.config:
+			self.config = os.environ
+
 	def start_requests(self):
 		yield  SplashRequest(
 			url=self.start_url, 
@@ -23,7 +28,7 @@ class ContentSpider(Spider):
 			args={
 				"wait": 1
 			},
-			splash_url="https://splash.cap-rover.purpletreetech.com",
+			splash_url=self.config["SPLASH_URL"],
 			splash_headers={
 				"Authorization": basic_auth_header(
 					self.config["SPLASH_USERNAME"], 
