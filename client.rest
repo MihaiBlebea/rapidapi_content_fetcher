@@ -1,10 +1,18 @@
 @baseUrl = http://127.0.0.1:5000
 @rapiApiProxySecret = 1234abcd
 
-###
-
 @scrapeUrl = https://www.calhoun.io/crash-course-on-go-interfaces/
 
+###
+
 GET {{baseUrl}}/scrape?url={{scrapeUrl}} HTTP/2.0
+Content-Type: application/json
+X-RapidAPI-Proxy-Secret: {{rapiApiProxySecret}}
+
+###
+
+@minFrequency=2
+
+GET {{baseUrl}}/chapters?url={{scrapeUrl}}&min_freq={{minFrequency}} HTTP/2.0
 Content-Type: application/json
 X-RapidAPI-Proxy-Secret: {{rapiApiProxySecret}}
