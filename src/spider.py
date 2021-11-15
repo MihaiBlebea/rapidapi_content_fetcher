@@ -3,8 +3,8 @@ from scrapy_splash import SplashRequest
 from w3lib.http import basic_auth_header
 from urllib.parse import urlparse
 from bs4 import BeautifulSoup
-from dotenv import dotenv_values
-import os
+
+from variables import get_variable
 
 
 class ContentSpider(Spider):
@@ -13,13 +13,8 @@ class ContentSpider(Spider):
 
 	start_url = None
 
-	config = dotenv_values(".env")
-
 	def __init__(self, url):
 		self.start_url = url
-
-		if "SPLASH_URL" not in self.config:
-			self.config = os.environ
 
 	def start_requests(self):
 		yield  SplashRequest(
@@ -28,11 +23,11 @@ class ContentSpider(Spider):
 			args={
 				"wait": 1
 			},
-			splash_url=self.config["SPLASH_URL"],
+			splash_url=get_variable("SPLASH_URL"),
 			splash_headers={
 				"Authorization": basic_auth_header(
-					self.config["SPLASH_USERNAME"], 
-					self.config["SPLASH_PASSWORD"],
+					get_variable("SPLASH_USERNAME"), 
+					get_variable("SPLASH_PASSWORD"),
 				)
 			},
 			# meta={
@@ -48,7 +43,8 @@ class ContentSpider(Spider):
 			"content_text": self.__parse_content(response),
 			"images": self.__parse_images(response),
 			"links": self.__get_page_links(response),
-			"tags": self.__parse_meta_tags(response)
+			"tags": self.__parse_meta_tags(response),
+			"keywords": self.__parse_meta_keywords(response)
 		}
 
 	def __get_page_links(self, response):
@@ -66,12 +62,12 @@ class ContentSpider(Spider):
 
 	def __parse_content(self, response) -> list:
 		soup = BeautifulSoup(response.body, "lxml")
-		tags = soup.findAll(["h1", "h2", "h3", "h4", "p"])
+		tags = soup.findAll(["h1", "h2", "h3", "h4", "h5", "h6", "p"])
 
 		results = []
 		for tag in tags:
 			result = {}
-			result[tag.name] = "".join(tag.text.strip().split())
+			result[tag.name] = " ".join(tag.text.strip().split())
 			results.append(result)
 			
 		return results
@@ -107,17 +103,21 @@ class ContentSpider(Spider):
 		return desc
 
 	def __parse_meta_tags(self, response) -> list:
-		tags = response.xpath("//meta[@property='article:tag']/@content").getall()
-		if len(tags) == 0:
-			tags = response.xpath("//meta[@name='keywords']/@content").get()
-			if tags is not None:
-				tags = tags.split(",")
-				result = []
-				for t in tags:
-					result.append(t.strip())
+		result = []
+		tags = response.xpath("//meta[@property='article:tag']/@content").get()
+		if tags is None:
+			return result
 
-				return result
-			else:
-				tags = []
+		tags = tags.split(",")
+		for t in tags:
+			result.append(t.strip())
 
-		return tags
+		return result
+
+	def __parse_meta_keywords(self, response) -> list:
+		result = []
+		tags = response.xpath("//meta[@name='keywords']/@content").get()
+		if tags is None:
+			return result
+
+		return tags.split(" ")
