@@ -1,8 +1,6 @@
 ---
-- name: Clear cache in Digital Ocean for content fetcher RapidAPI
+- name: Clone the cache in Digital Ocean for content fetcher RapidAPI
   hosts: do
-  vars:
-    container_name: $(docker ps --filter name=srv-captain--rapidapi-content-fetcher -q)
   tasks:
     - name: Get the container id
       ansible.builtin.command:
@@ -13,9 +11,9 @@
       debug:
         msg: "Container id is {{out.stdout}}"
 
-    - name: Run clear cache command in DO
+    - name: Get the volume path for the container
       ansible.builtin.command:
-        cmd: "docker exec -it {{out.stdout}} /bin/bash -c './command.sh -cc'"
+        cmd: "docker inspect {{out.stdout}}"
       register: out
 
-    - debug: var=out.stdout_lines
+    - debug: var=out.stdout

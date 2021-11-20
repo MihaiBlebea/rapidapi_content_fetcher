@@ -24,5 +24,11 @@ docker-api: docker-api-build docker-api-run
 docker-api-stop:
 	docker stop api && docker rm api
 
-ansible-clear_cache:
+ansible-clear-cache:
 	ansible-playbook -i $$HOME/.ansible/inventory ./ansible/clear_cache_do.yaml
+
+ansible-scrape:
+	ansible-playbook -i $$HOME/.ansible/inventory ./ansible/scrape_do.yaml --extra-vars "link=$(link)"
+
+ansible-clone-cache:
+	ansible-playbook -i $$HOME/.ansible/inventory ./ansible/clone_cache_do.yaml

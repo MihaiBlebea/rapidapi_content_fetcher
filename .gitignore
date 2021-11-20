@@ -1,3 +1,4 @@
 virtualenv
 store
+store_ext_clone.json
 .env
