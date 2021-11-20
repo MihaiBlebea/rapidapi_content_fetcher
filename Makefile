@@ -23,3 +23,6 @@ docker-api: docker-api-build docker-api-run
 
 docker-api-stop:
 	docker stop api && docker rm api
+
+ansible-clear_cache:
+	ansible-playbook -i $$HOME/.ansible/inventory ./ansible/clear_cache_do.yaml

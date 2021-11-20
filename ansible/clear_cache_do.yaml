@@ -1,0 +1,12 @@
+---
+- name: Clear cache in Digital Ocean for content fetcher RapidAPI
+  hosts: do
+  vars:
+    container_name: srv-captain--rapidapi-content-fetcher.1.47vti072gjkf4fmojqmmd5ltn
+  tasks:
+    - name: Run clear cache command in DO
+      ansible.builtin.command:
+        cmd: "docker exec -it {{ container_name }} /bin/bash -c './command.sh -cc'"
+      register: out
+
+    - debug: var=out.stdout_lines
