@@ -1,7 +1,6 @@
 from scrapy.crawler import CrawlerProcess
 from scrapy.signalmanager import dispatcher
 from scrapy import signals
-import argparse
 
 from spider import ContentSpider
 from store import store_scrape_results
@@ -11,29 +10,7 @@ results = []
 def crawler_results(signal, sender, item, response, spider):
 	results.append(item)
 
-def main():
-	parser = argparse.ArgumentParser(
-		prog= "scraper", 
-		usage="%(prog)s [options] \"project\"", 
-		description="scrape content from url.",
-	)
-
-	parser.add_argument(
-		"-l",
-		dest="link",
-		required=True,
-		help="link to scrape",
-	)
-
-	parser.add_argument(
-		"-id",
-		dest="scrape_id",
-		required=True,
-		help="scrape id to fetch back results",
-	)
-
-	args = parser.parse_args()
-	
+def scrape(link: str):
 	dispatcher.connect(crawler_results, signal=signals.item_scraped)
 
 	process = CrawlerProcess(settings={
@@ -50,7 +27,7 @@ def main():
 		"HTTPCACHE_STORAGE": "scrapy_splash.SplashAwareFSCacheStorage"
 	})
 
-	process.crawl(ContentSpider, args.link)
+	process.crawl(ContentSpider, link)
 	process.start()
 
 	store_scrape_results(results)
@@ -58,4 +35,4 @@ def main():
 	return results
 
 if __name__ == "__main__":
-	main()
+	scrape()

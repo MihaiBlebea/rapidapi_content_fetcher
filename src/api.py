@@ -91,7 +91,7 @@ def chapters():
 def get_or_scrape_content(url: str) -> dict:
 	result = store.get_scrape_results(url)
 	if result is None:
-		os.system(f"./virtualenv/bin/python3 ./src/scrape.py -l={url} -id=1")
+		os.system(f"./command.sh -s -l={url}")
 
 		attempts = 3
 		for i in range(attempts):
